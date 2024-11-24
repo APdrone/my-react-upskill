@@ -1,70 +1,348 @@
-# Getting Started with Create React App
+# repo
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+https://github.com/john-smilga/react-course-v3
 
-## Available Scripts
+# reactdom
 
-In the project directory, you can run:
+we use reactdom to place our component in the root
 
-### `npm start`
+```jsx
+ReactDOM.render(<Greeting />, document.getElementById('root'));
+```
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+from react 18 we nneed to do like that
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+```jsx
+const root = createRoot(document.getElementById('root'));
 
-### `npm test`
+root.render(<BookList />);
+```
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+# Behind the scene for JSX
 
-### `npm run build`
+```jsx
+function Greeting() {
+  return <h4>this is my first component</h4>;
+}
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+const Greeting = () => {
+  return React.createElement('h1', {}, 'hello world');
+};
+```
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+another example:
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+```jsx
+function Greeting() {
+  return (
+    <div>
+      <h4>this is my first component</h4>
+    </div>
+  );
+}
+```
 
-### `npm run eject`
+like this:
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+```jsx
+const Greeting = () => {
+  return React.createElement('div', {}, React.createElement('h1', {}, 'hello world'));
+};
+```
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+this getting messier as code increases
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+# JSX rules
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+- always return single element, means should have single parent
 
-## Learn More
+- use camelcase for html attributes(eg onClick etc)
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+-- className instead of class
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+we can usefragment as
 
-### Code Splitting
+```jsx
+function Greeting() {
+  return (
+    <React.Fragment>
+      <h4>this is my first component</h4>
+    </React.Fragment>
+  );
+}
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+or simply <> </>
 
-### Analyzing the Bundle Size
+# adding css
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+1. to use "index.css" and then import it where to use
 
-### Making a Progressive Web App
+2. or directly in the JSX like
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+```jsx
+const Author = () => <h4 style={{ color: '#617d98', fontsize: '0.75rem' }}>Arthur Conan Doyle</h4>;
+```
 
-### Advanced Configuration
+# ising JS in JSX
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+we can define variables outside or inside the component and can use it using curly braces {}. in this example , we have defined author(outside) and title(inside) the function
 
-### Deployment
+```jsx
+const author = 'Arthur Conan Doyle';
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+const Book = () => {
+  const title = 'The Complete Novels of Sherlock Holmess';
+  return (
+    <article className="book">
+      <img src="https://m.media-amazon.com/images/I/81StezluKUS._AC_UY218_.jpg" alt="" />
+      <h1>{title}</h1>
+      <h4 style={{ color: '#617d98', fontsize: '0.75rem' }}>{author}</h4>
+    </article>
+  );
+};
+```
 
-### `npm run build` fails to minify
+but this wont work.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+`  <p>{let x=6}</p>`
+
+our expression should return some values
+
+# props
+
+props is basically an object ans that's why ewe can use destructuring
+
+props={};
+
+we can use like
+
+```jsx
+const Book = (props) => {
+  const { img, author, title } = props;
+};
+```
+
+or directly props at the function level
+
+```jsx
+const Book = ({ img, author, title }) => {
+  return (
+    <article className="book">
+      <img src={img} alt="" />
+      <h1>{title}</h1>
+      <h4 style={{ color: '#617d98', fontsize: '0.75rem' }}>{author.toUpperCase()}</h4>
+    </article>
+  );
+};
+```
+
+# props children
+
+to get children we can use
+
+we added the content between the component , closing and opening tag
+
+```jsx
+function BookList() {
+  return (
+    <section className="booklist">
+      <Book img={firstBook.img} author={firstBook.author} title={firstBook.title}>
+        Lorem ipsum dolor sit amet consectetur adipisicing elit. Quos ex minima officiis illum nobis assumenda corrupti
+        molestias cum quo sit.
+      </Book>
+      <Book img={secondBook.img} author={secondBook.author} title={secondBook.title} />
+    </section>
+  );
+}
+```
+
+and then we can use it in the component
+
+```jsx
+const Book = ({ img, author, title, children }) => {
+  return (
+    <article className="book">
+      <img src={img} alt="" />
+      <h1>{title}</h1>
+      <h4 style={{ color: '#617d98', fontsize: '0.75rem' }}>{author.toUpperCase()}</h4>
+      {children}
+    </article>
+  );
+};
+```
+
+# simple list
+
+```jsx
+const books = [
+  {
+    img: 'https://m.media-amazon.com/images/I/81StezluKUS._AC_UY218_.jpg',
+    title: 'Money problems an waty to deal',
+    author: 'Money Boyle',
+  },
+  {
+    img: 'https://m.media-amazon.com/images/I/81StezluKUS._AC_UY218_.jpg',
+    title: 'The Complete Novels of Sherlock Holmes',
+    author: 'arthur conan doyle',
+  },
+];
+```
+
+if we try to directly use "books" in the JSx then we will get error , as it complains that we cannot have react children as "object"
+
+```jsx
+function BookList() {
+  return <section className="booklist">{books}</section>;
+}
+```
+
+but it is possible for the string
+
+`books=['john','albert','Samson']`
+
+# adding key
+
+to keep track of the item, we add key(unique value) for React
+
+also we can pass props in two ways:
+
+1.
+
+```jsx
+function BookList() {
+  return (
+    <section className="booklist">
+      {books.map((book) => (
+        <Book key={book.id} book={book} />
+      ))}
+    </section>
+  );
+}
+
+const Book = (props) => {
+  const { img, author, title } = props.book;
+};
+```
+
+2. directly using destructuring
+
+```jsx
+function BookList() {
+  return (
+    <section className="booklist">
+      {books.map((book) => (
+        <Book key={book.id} book={book} />
+      ))}
+    </section>
+  );
+}
+
+const Book = ({ img, author, title }) => {
+return ()
+}
+
+```
+
+# events basics
+
+used onclick hamdler, onmouseover
+
+when used without argument , pass the reference
+
+```jsx
+<button type="button" onClick={onClickHandler}>
+  Submit
+</button>
+```
+
+when used with reference , pass using arrow
+
+```jsx
+<button type="button" onClick={() => complexExample(author)}>
+  Submit Again
+</button>
+```
+
+Full Example:
+
+```jsx
+const Book = ({ img, author, title }) => {
+  const onClickHandler = () => {
+    console.log('hello there!!!');
+  };
+  const complexExample = (author) => {
+    console.log(author);
+  };
+
+  return (
+    <article
+      className="book"
+      onMouseOver={() => {
+        console.log(title);
+      }}
+    >
+      <img src={img} alt="" />
+      <h1 onClick={() => console.log(title)}>{title}</h1>
+      <h4 style={{ color: '#617d98', fontsize: '0.75rem' }}>{author.toUpperCase()}</h4>
+      <button type="button" onClick={onClickHandler}>
+        Submit
+      </button>
+      <button type="button" onClick={() => complexExample(author)}>
+        Submit Again
+      </button>
+    </article>
+  );
+};
+```
+
+# import and export statements
+
+we will create "book.js" and "books.js" file and then we can move the code
+to corresponsing files.
+
+we have option to use "default export" or "named export"
+
+for books.js we will use "named export"
+
+```jsx
+export const books = [];
+```
+
+and then in index.js file , we will use import with curly braces and use the exact name in curly braces we defined in the books.js(as using named named export )
+
+`import {book} from "./book";`
+
+for book.js we can use say "default export"
+
+also keep in mind we can multiple named export but only one
+default export in a file
+
+```jsx
+import React from 'react';
+
+const book = () => {
+  return <div>book</div>;
+};
+```
+
+export default book
+
+and then we can import in the index.js file using
+
+`import Book from "./Book";`
+
+we dont need to look for specific name , as we exporting book as default from there , also we can use another name and it will work fine
+
+`import SpecficBook from "./Book";
+`
+
+# Free hosting
+
+to host in netlify, we can create production build using
+
+npm run build
+
+once it is done, it will be availble in the "build" folder and then drop it in the netlify (using manually develop step)
+
+https://neon-naiad-56ba8c.netlify.app/
